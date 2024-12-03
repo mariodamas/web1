@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Catálogo Socios Brand</title>
+    <title>DesignFolio: Portfolio Website Template</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
                 <img src="images/Football shirts2.jpg" alt="" class="avatar" />
                 <h2>Socios Brand</h2>
                 <p>
-                    I <strong>Aquí se encuentra nuestro catálogo.</strong>Cualquier pedido por los siguientes métodos de contacto :
+                    I <strong>Aquí se encuentra nuestro catálogo.</strong>Cualquier pedido por los siguientes métodos de contacto
                 <ul>
                     <li><i class="fa-solid fa-envelope"></i> Email: <a href="gmail:sociosfcoficial@gmail.com?chat">sociosfcoficial@gmail.com</a></li>
                     <li><i class="fa-brands fa-instagram"></i> Instagram: <a href="https://www.instagram.com/socios.brand/">socios.brand</a></li>
@@ -70,8 +70,6 @@
     <script src="js/simple-lightbox.jquery.js"></script>
     <script>
         $(document).ready(function(){
-            var lightbox = $('.gallery a').simpleLightbox({ history: false, uniqueImages:false });
-
             // CSV data as a string
             const csvData = `2016-17 Real Madrid Away Retro Shorts,https://img.zhidian-inc.cn/cheap-soccerjerseys/1ee003ad/small.jpg,La Liga
 95/97 Real Betis Away Retro Soccer Jerseys ,https://img.zhidian-inc.cn/cheap-soccerjerseys/c28b7507/small.jpg,La Liga
@@ -13965,20 +13963,32 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
 24-25 Manchester City padded coat ,https://img.zhidian-inc.cn/cheap-soccerjerseys/85ba72c1/small.jpg,Otros
 2024 Japan Special Player Version Soccer Jerseys ,https://img.zhidian-inc.cn/cheap-soccerjerseys/8842953b/small.jpg,Otros`;
             
-            const items = csvData.split('\n').map(line => {
+            let items = csvData.split('\n').map(line => {
                 const [name, image, league] = line.split(',');
                 return { name, image, league };
             });
-
+        
+            // Sort items so that those containing "24-25" appear first
+            items = items.sort((a, b) => {
+                if (a.name.includes("24-25") && !b.name.includes("24-25")) {
+                    return -1;
+                } else if (!a.name.includes("24-25") && b.name.includes("24-25")) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+        
             const itemsPerPage = 30; // Increased number of items per page
             const totalPages = Math.ceil(items.length / itemsPerPage);
             let currentPage = 1;
-
+            let lightbox;
+        
             function renderPage(page, filteredItems = items) {
                 const start = (page - 1) * itemsPerPage;
                 const end = start + itemsPerPage;
                 const pageItems = filteredItems.slice(start, end);
-
+        
                 const galleryItems = document.getElementById('galleryitems');
                 galleryItems.innerHTML = pageItems.map(item => `
                     <div class="item">
@@ -13994,16 +14004,21 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                         </div>
                     </div>
                 `).join('');
-
-                lightbox.refresh();
+        
+                // Initialize or refresh lightbox
+                if (lightbox) {
+                    lightbox.refresh();
+                } else {
+                    lightbox = $('.gallery a').simpleLightbox({ history: false, uniqueImages: false });
+                }
             }
-
+        
             function renderPagination(filteredItems = items) {
                 const pagination = document.getElementById('pagination');
                 const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
                 let startPage = Math.max(1, currentPage - 2);
                 let endPage = Math.min(totalPages, currentPage + 2);
-
+        
                 if (endPage - startPage < 4) {
                     if (startPage === 1) {
                         endPage = Math.min(5, totalPages);
@@ -14011,25 +14026,25 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                         startPage = Math.max(1, totalPages - 4);
                     }
                 }
-
+        
                 let paginationHTML = `
-                    <a href="#" class="prev" ${currentPage === 1 ? 'style="visibility: hidden;"' : ''}>&laquo;</a>
                 `;
-
+        
                 for (let i = startPage; i <= endPage; i++) {
                     paginationHTML += `
                         <a href="#" class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>
                     `;
                 }
-
+        
                 paginationHTML += `
+                    <a href="#" class="prev" ${currentPage === totalPages ? 'style="visibility: hidden;"' : ''}>&laquo;</a>
                     <a href="#" class="next" ${currentPage === totalPages ? 'style="visibility: hidden;"' : ''}>&raquo;</a>
                     <input type="number" id="jumpToPage" min="1" max="${totalPages}" placeholder="Page" style="width: 50px;">
                     <button id="jumpButton">Go</button>
                 `;
-
+        
                 pagination.innerHTML = paginationHTML;
-
+        
                 pagination.querySelectorAll('a').forEach(a => {
                     a.addEventListener('click', function(e) {
                         e.preventDefault();
@@ -14044,7 +14059,7 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                         renderPagination(filteredItems);
                     });
                 });
-
+        
                 document.getElementById('jumpButton').addEventListener('click', function() {
                     const jumpToPage = parseInt(document.getElementById('jumpToPage').value);
                     if (jumpToPage >= 1 && jumpToPage <= totalPages) {
@@ -14054,7 +14069,7 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                     }
                 });
             }
-
+        
             document.getElementById('searchButton').addEventListener('click', function() {
                 const query = document.getElementById('searchInput').value.toLowerCase();
                 const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
@@ -14062,7 +14077,7 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                 renderPagination(filteredItems);
                 renderPage(currentPage, filteredItems);
             });
-
+        
             document.querySelectorAll('.filter-button').forEach(button => {
                 button.addEventListener('click', function() {
                     const league = this.getAttribute('data-league');
@@ -14080,7 +14095,7 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                     }
                 });
             });
-
+        
             renderPagination();
             renderPage(currentPage);
         });

@@ -169,6 +169,12 @@ header{
 .pagination button:hover {
   background-color: darkblue;
 }
+
+.pagination span {
+  margin-left: 10px;
+  font-size: 16px;
+  color: #333;
+}
 .portfoliogallery {
   float: right;
   width: 100%;
