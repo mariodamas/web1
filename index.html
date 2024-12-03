@@ -26,6 +26,10 @@
                     <li><i class="fa-brands fa-instagram"></i> Instagram: <a href="https://www.instagram.com/socios.brand/">socios.brand</a></li>
                 </ul>
             </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Buscar camisetas...">
+                <button id="searchButton">Buscar</button>
+            </div>
         </header>
         <!-- HEADER -->
         <section class="portfoliogallery gallery">
@@ -13952,33 +13956,32 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
 24-25 Manchester City padded coat ,https://img.zhidian-inc.cn/cheap-soccerjerseys/c19592a1/small.jpg,Otros
 24-25 Manchester City padded coat ,https://img.zhidian-inc.cn/cheap-soccerjerseys/85ba72c1/small.jpg,Otros
 2024 Japan Special Player Version Soccer Jerseys ,https://img.zhidian-inc.cn/cheap-soccerjerseys/8842953b/small.jpg,Otros`;
-
-            // Parse CSV data
+            
             const items = csvData.split('\n').map(line => {
-                const [name, img, link] = line.split(',');
-                return { name, img, link };
+                const [name, image, league] = line.split(',');
+                return { name, image, league };
             });
 
             const itemsPerPage = 30;
             const totalPages = Math.ceil(items.length / itemsPerPage);
 
-            function renderPage(page) {
+            function renderPage(page, filteredItems = items) {
                 const start = (page - 1) * itemsPerPage;
                 const end = start + itemsPerPage;
-                const pageItems = items.slice(start, end);
+                const pageItems = filteredItems.slice(start, end);
 
                 const galleryItems = document.getElementById('galleryitems');
                 galleryItems.innerHTML = pageItems.map(item => `
                     <div class="item">
                         <div class="itemcontent">
                             <div class="overlay">
-                                <a href="${item.img}" class="zoomlink"><i class="fa-solid fa-plus"></i></a>
+                                <a href="${item.image}" class="zoomlink"><i class="fa-solid fa-plus"></i></a>
                                 <div class="text">
                                     <h3>${item.name}</h3>
-                                    <a href="${item.link}" class="livelink">See Live <i class="fa-solid fa-angle-right"></i></a>
+                                    <a href="${item.league}" class="livelink">See Live <i class="fa-solid fa-angle-right"></i></a>
                                 </div>
                             </div>
-                            <img src="${item.img}" alt="${item.name}" />
+                            <img src="${item.image}" alt="${item.name}" />
                         </div>
                     </div>
                 `).join('');
@@ -13986,8 +13989,9 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                 lightbox.refresh();
             }
 
-            function renderPagination() {
+            function renderPagination(filteredItems = items) {
                 const pagination = document.getElementById('pagination');
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
                 pagination.innerHTML = Array.from({ length: totalPages }, (_, i) => `
                     <a href="#" class="${i === 0 ? 'active' : ''}" data-page="${i + 1}">${i + 1}</a>
                 `).join('');
@@ -13996,12 +14000,19 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                     a.addEventListener('click', function(e) {
                         e.preventDefault();
                         const page = parseInt(this.getAttribute('data-page'));
-                        renderPage(page);
+                        renderPage(page, filteredItems);
                         pagination.querySelectorAll('a').forEach(a => a.classList.remove('active'));
                         this.classList.add('active');
                     });
                 });
             }
+
+            document.getElementById('searchButton').addEventListener('click', function() {
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+                renderPagination(filteredItems);
+                renderPage(1, filteredItems);
+            });
 
             renderPagination();
             renderPage(1);
