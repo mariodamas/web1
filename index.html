@@ -30,6 +30,14 @@
                 <input type="text" id="searchInput" placeholder="Buscar camisetas...">
                 <button id="searchButton">Buscar</button>
             </div>
+            <div class="filter-buttons">
+                <button class="filter-button" data-league="La Liga">La Liga</button>
+                <button class="filter-button" data-league="Premier League">Premier League</button>
+                <button class="filter-button" data-league="Bundesliga">Bundesliga</button>
+                <button class="filter-button" data-league="Ligue 1">Ligue 1</button>
+                <button class="filter-button" data-league="Serie A">Serie A</button>
+                <button class="filter-button" data-league="Otros">Otros</button>
+            </div>
         </header>
         <!-- HEADER -->
         <section class="portfoliogallery gallery">
@@ -13962,8 +13970,9 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
                 return { name, image, league };
             });
 
-            const itemsPerPage = 30;
+            const itemsPerPage = 10; // Increased number of items per page
             const totalPages = Math.ceil(items.length / itemsPerPage);
+            let currentPage = 1;
 
             function renderPage(page, filteredItems = items) {
                 const start = (page - 1) * itemsPerPage;
@@ -13992,30 +14001,88 @@ L-os An-geles Ki-ngs,https://img.zhidian-inc.cn/cheap-soccerjerseys/8c95965a/sma
             function renderPagination(filteredItems = items) {
                 const pagination = document.getElementById('pagination');
                 const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-                pagination.innerHTML = Array.from({ length: totalPages }, (_, i) => `
-                    <a href="#" class="${i === 0 ? 'active' : ''}" data-page="${i + 1}">${i + 1}</a>
-                `).join('');
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+
+                if (endPage - startPage < 4) {
+                    if (startPage === 1) {
+                        endPage = Math.min(5, totalPages);
+                    } else if (endPage === totalPages) {
+                        startPage = Math.max(1, totalPages - 4);
+                    }
+                }
+
+                let paginationHTML = `
+                    <a href="#" class="prev" ${currentPage === 1 ? 'style="visibility: hidden;"' : ''}>&laquo;</a>
+                `;
+
+                for (let i = startPage; i <= endPage; i++) {
+                    paginationHTML += `
+                        <a href="#" class="${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>
+                    `;
+                }
+
+                paginationHTML += `
+                    <a href="#" class="next" ${currentPage === totalPages ? 'style="visibility: hidden;"' : ''}>&raquo;</a>
+                    <input type="number" id="jumpToPage" min="1" max="${totalPages}" placeholder="Page" style="width: 50px;">
+                    <button id="jumpButton">Go</button>
+                `;
+
+                pagination.innerHTML = paginationHTML;
 
                 pagination.querySelectorAll('a').forEach(a => {
                     a.addEventListener('click', function(e) {
                         e.preventDefault();
-                        const page = parseInt(this.getAttribute('data-page'));
-                        renderPage(page, filteredItems);
-                        pagination.querySelectorAll('a').forEach(a => a.classList.remove('active'));
-                        this.classList.add('active');
+                        if (this.classList.contains('prev')) {
+                            currentPage = Math.max(1, currentPage - 1);
+                        } else if (this.classList.contains('next')) {
+                            currentPage = Math.min(totalPages, currentPage + 1);
+                        } else {
+                            currentPage = parseInt(this.getAttribute('data-page'));
+                        }
+                        renderPage(currentPage, filteredItems);
+                        renderPagination(filteredItems);
                     });
+                });
+
+                document.getElementById('jumpButton').addEventListener('click', function() {
+                    const jumpToPage = parseInt(document.getElementById('jumpToPage').value);
+                    if (jumpToPage >= 1 && jumpToPage <= totalPages) {
+                        currentPage = jumpToPage;
+                        renderPage(currentPage, filteredItems);
+                        renderPagination(filteredItems);
+                    }
                 });
             }
 
             document.getElementById('searchButton').addEventListener('click', function() {
                 const query = document.getElementById('searchInput').value.toLowerCase();
                 const filteredItems = items.filter(item => item.name.toLowerCase().includes(query));
+                currentPage = 1;
                 renderPagination(filteredItems);
-                renderPage(1, filteredItems);
+                renderPage(currentPage, filteredItems);
+            });
+
+            document.querySelectorAll('.filter-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const league = this.getAttribute('data-league');
+                    const isActive = this.classList.contains('active');
+                    document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                    if (!isActive) {
+                        this.classList.add('active');
+                        const filteredItems = items.filter(item => item.league === league);
+                        currentPage = 1;
+                        renderPagination(filteredItems);
+                        renderPage(currentPage, filteredItems);
+                    } else {
+                        renderPagination(items);
+                        renderPage(currentPage, items);
+                    }
+                });
             });
 
             renderPagination();
-            renderPage(1);
+            renderPage(currentPage);
         });
     </script>
 </body>

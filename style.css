@@ -99,6 +99,76 @@ header{
   background-color: darkblue;
 }
 
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.filter-button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: royalblue;
+  color: white;
+  cursor: pointer;
+}
+
+.filter-button.active {
+  background-color: darkblue;
+}
+
+.filter-button:hover {
+  background-color: darkblue;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.pagination a {
+  margin: 0 5px;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-decoration: none;
+  color: #333;
+}
+
+.pagination a.active {
+  background-color: royalblue;
+  color: white;
+}
+
+.pagination a:hover {
+  background-color: #ddd;
+}
+
+.pagination input {
+  margin-left: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.pagination button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: royalblue;
+  color: white;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background-color: darkblue;
+}
 .portfoliogallery {
   float: right;
   width: 100%;
